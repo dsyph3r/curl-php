@@ -29,8 +29,8 @@ $curl = new Curl();
  * @link http://code.google.com/apis/maps/documentation/geocoding/
  */
 echo "Geolocating ...\n";
-$address = "Millenium Stadium, Cardiff, Wales";
-$response = $curl->get("http://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($address) . "&sensor=false");
+$address = 'Millenium Stadium, Cardiff, Wales';
+$response = $curl->get('http://maps.googleapis.com/maps/api/geocode/json?address=' . urlencode($address) . '&sensor=false');
 
 $status     = $response['status'];
 $headers    = $response['headers'];
@@ -48,7 +48,7 @@ echo "\n\n";
  * @link http://developer.github.com/v3/users/
  */
 echo "GitHub ...\n";
-$response = $curl->get("https://api.github.com/users/dsyph3r");
+$response = $curl->get('https://api.github.com/users/dsyph3r');
 
 $status     = $response['status'];
 $headers    = $response['headers'];
