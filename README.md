@@ -11,9 +11,6 @@ Simple PHP cURL library. Supports requests for GET, POST, PUT, PATCH and DELETE.
 
 ## Usage
 
-The Symfony ClassLoader Component is used for autoloading, but this could easy be
-substituted for another autoloader.
-
 ### HTTP GET
 
 ```php
@@ -42,7 +39,10 @@ $response   = $curl->post('https://api.github.com/user/emails', array('octocat@g
 ## Examples
 
 There are some simple examples using Google Geocoding API and GitHub API in the
-examples folder
+examples folder.
+
+The Symfony ClassLoader Component is used for autoloading, but this could easy be
+substituted for another autoloader.
 
 ## Tests
 
