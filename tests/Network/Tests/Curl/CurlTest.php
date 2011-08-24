@@ -5,7 +5,7 @@ namespace Network\Tests\Curl;
 /**
  * CurlTest
  *
- * Test for CurlTest
+ * Tests for Curl
  *
  * @author    dsyph3r <d.syph.3r@gmail.com>
  */
