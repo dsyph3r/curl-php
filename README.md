@@ -6,8 +6,8 @@ Simple PHP cURL library. Supports requests for GET, POST, PUT, PATCH and DELETE.
 
 ## Requirements
 
- PHP 5.3+
- cURL
+ * PHP 5.3+
+ * cURL
 
 ## Usage
 
