@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../lib/vendor/Symfony/Component/ClassLoader/U
  * @link http://symfony.com/doc/current/cookbook/tools/autoloader.html
  */
 $loader = new Symfony\Component\ClassLoader\UniversalClassLoader();
-// Register the location of the GitHub namespace
+// Register the location of the Network namespace
 $loader->registerNamespaces(array(
   'Network'           => __DIR__.'/../lib'
 ));
