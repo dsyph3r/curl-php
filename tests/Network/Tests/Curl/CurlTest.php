@@ -120,7 +120,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $response = <<<RESPONSE
 HTTP/1.1 200 OK
 Server: nginx/1.0.4
-Date: Mon, 22 Aug 2011 08:45:15 GMT
+Date: Tue, 22 Aug 2011 08:45:15 GMT
 Content-Type: application/json
 Connection: keep-alive
 Status: 200 OK

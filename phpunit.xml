@@ -11,15 +11,15 @@
          syntaxCheck="false"
          bootstrap="./tests/bootstrap.php"
 >
-  <testsuites>
-    <testsuite name="Test suite">
-        <directory>./tests/Network/</directory>
-    </testsuite>
-  </testsuites>
+    <testsuites>
+        <testsuite name="Test suite">
+            <directory>./tests/Network/</directory>
+        </testsuite>
+    </testsuites>
 
-  <filter>
-    <whitelist>
-        <directory>./lib/Network/</directory>
-    </whitelist>
-  </filter>
+    <filter>
+        <whitelist>
+            <directory>./lib/Network/</directory>
+        </whitelist>
+    </filter>
 </phpunit>
