@@ -132,6 +132,10 @@ class Curl
         if (isset($options['headers']) && count($options['headers']))
             curl_setopt($curl, CURLOPT_HTTPHEADER, $options['headers']);
 
+        // Check for basic auth
+        if (isset($options['auth']['type']) && "basic" === $options['auth']['type'])
+            curl_setopt($curl, CURLOPT_USERPWD, $options['auth']['username'] . ':' . $options['auth']['password']);
+            
         $response = $this->doCurl($curl);
 
         curl_close($curl);
