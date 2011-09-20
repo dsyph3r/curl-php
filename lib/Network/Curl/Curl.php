@@ -22,6 +22,40 @@ class Curl
     const DELETE  = 'DELETE';
 
     /**
+     * @var cURL handle
+     */
+    private $curl;
+
+    /**
+     * Create the cURL resource
+     */
+    public function __construct()
+    {
+        $this->curl = curl_init();
+    }
+
+    /**
+     * Clean up the cURL handle
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->curl))
+        {
+            curl_close($this->curl);
+        }
+    }
+
+    /**
+     * Get the cURL handle
+     *
+     * @return  cURL            cURL handle
+     */
+    public function getCurl()
+    {
+        return $this->curl;
+    }
+
+    /**
      * Make a HTTP GET request
      *
      * @param   string  $url          Full URL including protocol
@@ -97,36 +131,12 @@ class Curl
      */
     protected function request($url, $method = self::GET, $params = array(), $options = array())
     {
-        $curl = curl_init();
+        curl_setopt($this->curl, CURLOPT_HEADER, true);
+        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
 
-        // Setup HTTP method specifics
-        switch ($method) {
-            case self::GET:
-                if (count($params)) {
-                  $url .= '?' . http_build_query($params);
-                }
-                break;
-            case self::POST:
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-                break;
-            case self::PUT:
-                curl_setopt($curl, CURLOPT_PUT, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-                //curl_setopt($curl, CURLOPT_INFILESIZE, strlen($params));
-                break;
-            case self::PATCH:
-            case self::DELETE:
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-                break;
-            default:
-                throw new CurlException('Unsupported HTTP request method ' . $method);
-        }
-
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($this->curl, CURLOPT_URL, $url);
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($params));
 
         // Check for custom headers
         if (isset($options['headers']) && count($options['headers']))
@@ -135,10 +145,8 @@ class Curl
         // Check for basic auth
         if (isset($options['auth']['type']) && "basic" === $options['auth']['type'])
             curl_setopt($curl, CURLOPT_USERPWD, $options['auth']['username'] . ':' . $options['auth']['password']);
-            
-        $response = $this->doCurl($curl);
 
-        curl_close($curl);
+        $response = $this->doCurl();
 
         // Separate headers and body
         $responseSplit = explode("\r\n\r\n", $response['response']);
@@ -169,6 +177,7 @@ class Curl
             $header = explode(":", $line, 2);
             $headers[trim($header[0])] = trim($header[1]);
         }
+        
         return $headers;
     }
 
@@ -178,10 +187,10 @@ class Curl
      * @param   cURL Handle     $curl       The cURL handle to use
      * @return  array                       cURL response
      */
-    protected function doCurl($curl)
+    protected function doCurl()
     {
-        $response     = curl_exec($curl);
-        $curlInfo     = curl_getinfo($curl);
+        $response     = curl_exec($this->curl);
+        $curlInfo     = curl_getinfo($this->curl);
 
         $results = array(
             'curl_info'     => $curlInfo,
