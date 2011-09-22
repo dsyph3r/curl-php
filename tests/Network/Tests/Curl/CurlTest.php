@@ -81,10 +81,10 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('data', $result);
     }
 
-    public function testHeaders()
+    public function test200Headers()
     {
+        // Test 200 OK headers
         $curlMock = $this->getCurlMock();
-
         $curlMock->expects($this->once())
             ->method('doCurl')
             ->will($this->returnValue($this->getResultRequest()));
@@ -95,6 +95,102 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('application/json', $headers['Content-Type']);
         $this->assertEquals('Tue, 22 Aug 2011 08:45:15 GMT', $headers['Date']);
+    }
+
+    /**
+     * Tests 1 line headers such as a 501 response
+     */
+    public function test501Headers()
+    {
+        $response = <<<RESPONSE
+HTTP/1.1 501 Not Implemented
+
+
+RESPONSE;
+
+        // Test 501 Not Implemented Headers
+        $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->once())
+            ->method('doCurl')
+            ->will($this->returnValue(array(
+                'curl_info' => array('http_code' => 501),
+                'response'  => $response
+            )
+        ));
+
+        $result = $curlMock->get("http://test.com");
+
+        $headers = $result['headers'];
+
+        $this->assertEquals('HTTP/1.1 501 Not Implemented', $headers['HTTP']);
+    }
+
+    /**
+     * Tests for 100 Continue header supported by HTTP 1.1
+     * HTTP 100 should be dropped to return 2nd header status
+     */
+    public function test100Headers()
+    {
+        $response = <<<RESPONSE
+HTTP/1.1 100 Continue
+
+HTTP/1.1 200 OK
+Date: Wed, 21 Sep 2011 12:54:49 GMT
+Server: Apache/2.2.17 (Ubuntu)
+Content-Type: text/html; charset=UTF-8
+
+Response Body
+RESPONSE;
+
+        // Test 100 Continue Headers
+        $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->once())
+            ->method('doCurl')
+            ->will($this->returnValue(array(
+                'curl_info' => array('http_code' => 200),
+                'response'  => $response
+            )
+        ));
+
+        $result = $curlMock->post("http://test.com");
+
+        $headers = $result['headers'];
+
+        $this->assertEquals('HTTP/1.1 200 OK', $headers['HTTP']);
+        $this->assertEquals('text/html; charset=UTF-8', $headers['Content-Type']);
+    }
+
+    /**
+     * Tests headers than contains multiple whitespace and split correclty
+     * if on LF is used, ie not CRLF
+     */
+    public function testMultiWhiteSpaceHeaders()
+    {
+$response = <<<RESPONSE
+HTTP/1.1 200 OK\nDate:\tWed, 21 Sep 2011 12:54:49 GMT\nServer:       Apache/2.2.17 (Ubuntu)
+Content-Type:text/html; charset=UTF-8
+
+Response Body
+RESPONSE;
+
+        // Test 100 Continue Headers
+        $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->once())
+            ->method('doCurl')
+            ->will($this->returnValue(array(
+                'curl_info' => array('http_code' => 200),
+                'response'  => $response
+            )
+        ));
+
+        $result = $curlMock->post("http://test.com");
+
+        $headers = $result['headers'];
+
+        $this->assertEquals('HTTP/1.1 200 OK', $headers['HTTP']);
+        $this->assertEquals('Wed, 21 Sep 2011 12:54:49 GMT', $headers['Date']);
+        $this->assertEquals('Apache/2.2.17 (Ubuntu)', $headers['Server']);
+        $this->assertEquals('text/html; charset=UTF-8', $headers['Content-Type']);
     }
 
     public function testData()
@@ -132,5 +228,4 @@ RESPONSE;
             'response'  => $response
         );
     }
-
 }

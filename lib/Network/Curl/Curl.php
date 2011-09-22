@@ -149,13 +149,14 @@ class Curl
         $response = $this->doCurl();
 
         // Separate headers and body
-        $responseSplit = explode("\r\n\r\n", $response['response']);
+        $responseSplit = preg_split('/((?:\\r?\\n){2})/', $response['response']);
+        $responseCount = count($responseSplit);
 
         $results = array(
             'curl_info'     => $response['curl_info'],
             'status'        => $response['curl_info']['http_code'],
-            'headers'       => $this->splitHeaders($responseSplit[0]),
-            'data'          => $responseSplit[1],
+            'headers'       => $this->splitHeaders($responseSplit[$responseCount-2]),
+            'data'          => $responseSplit[$responseCount-1],
         );
 
         return $results;
@@ -177,7 +178,7 @@ class Curl
             $header = explode(":", $line, 2);
             $headers[trim($header[0])] = trim($header[1]);
         }
-        
+
         return $headers;
     }
 
